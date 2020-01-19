@@ -1,100 +1,81 @@
-import React from "react";
-import { Button, Modal, AutoComplete, Checkbox } from "antd";
-import { Connected, Kudo, Dispatcher, User } from "../state";
-import TextArea from "antd/lib/input/TextArea";
-import { addKudo } from "./Login";
-import { maxKudosPerPeriod } from "./firestore";
+import React, { useState } from "react";
+import { Dispatcher, User } from "../state";
+import { FormControlLabel, Checkbox, FormControl, InputLabel, Select, MenuItem, TextField, Button, DialogContent, DialogTitle, Dialog, DialogActions } from "@material-ui/core";
+import { SendOutlined } from "@material-ui/icons";
+import { maxKudosPerPeriod } from "../config/config";
+import { addKudo } from "../services/firestoreService";
 
 interface Props extends Dispatcher {
   user?: User;
   users: User[];
 }
-interface State extends Partial<Kudo> {
-  visible: boolean;
-}
 
-export class NewKudo extends React.Component<Props, State> {
-  state: State = { visible: false };
+export const NewKudo = ({ user, dispatch, users }: Props) => {
+  const [opened, setOpened] = useState(false);
+  const close = () => setOpened(false);
+  const [message, setMessage] = useState('');
+  const [receiverUid, setReceiverUid] = useState('');
+  const [senderAgreesWithPublish, setSenderAgreesWithPublish] = useState(false);
+  const [senderAnonymous, setSenderAnonymous] = useState(true);
 
-  showModal = () => {
-    this.setState({
-      visible: true
-    });
-  };
-
-  handleOk = async () => {
-    const { user } = this.props;
+  const handleOk = async () => {
     if (!user) throw new Error('Must have user to create kudos');
     const kudoData = {
-      message: this.state.message,
-      receiverUid: this.state.receiverUid,
-      senderAgreesWithPublish: !!this.state.senderAgreesWithPublish,
-      senderAnonymous: !!this.state.senderAnonymous
+      message: message,
+      receiverUid: receiverUid,
+      senderAgreesWithPublish: senderAgreesWithPublish,
+      senderAnonymous: senderAnonymous
     };
     const kudo = await addKudo(
       // TODO
       kudoData as any,
       user,
     );
-    this.props.dispatch({ type: "createdKudo", kudo });
-    this.setState({
-      visible: false
-    });
+    dispatch({ type: "createdKudo", kudo });
+    close();
   };
 
-  handleCancel = () => {
-    this.setState({
-      visible: false
-    });
-  };
-
-  render() {
-    const {user, users} = this.props;
-    if (!user) return null;
-    return (
-      <div>
-        {this.props.user && (
-          <Button type="primary" onClick={this.showModal}>
-            Add Kudo ({user.kudosSentThisPeriod}/
-            {maxKudosPerPeriod})
+  if (!user) return null;
+  return (
+    <div>
+      {user && (
+        <Button variant="contained" color="primary" onClick={() => setOpened(true)} startIcon={<SendOutlined />}>
+          Send Kudos ({user.kudosSentThisPeriod}/{maxKudosPerPeriod})
+        </Button>
+      )}
+      <Dialog open={opened} onClose={close}>
+        <DialogTitle id="form-dialog-title">Give Kudos</DialogTitle>
+        <DialogContent className="kudo-from">
+          <FormControl>
+            <InputLabel>Your hero</InputLabel>
+            <Select onChange={e => setReceiverUid(String(e.target.value))}>
+              {users.map(u => <MenuItem value={u.uid}>{`${u.displayName} (${u.email})`}</MenuItem>)}
+            </Select>
+          </FormControl>
+          <TextField
+            label="Message"
+            multiline
+            rowsMax="4"
+            onChange={e => setMessage(e.target.value)}
+          />
+          <FormControlLabel
+            control={<Checkbox onChange={e => setSenderAgreesWithPublish(e.target.checked)} value="jason" />}
+            label="Agree to publish"
+          />
+          <FormControlLabel
+            control={<Checkbox onChange={e => setSenderAnonymous(!e.target.checked)} value="jason" />}
+            label="Agree to display my name"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={close} color="primary">
+            Cancel
           </Button>
-        )}
-        <Modal
-          title="Basic Modal"
-          visible={this.state.visible}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-        >
-          <AutoComplete
-            style={{ width: 200 }}
-            dataSource={users.map(u => ({
-              text: `${u.displayName} (${u.email})`,
-              value: u.uid
-            }))}
-            placeholder="Start typing"
-            onChange={e => this.setState({ receiverUid: e.toString() })}
-          />
-          <TextArea
-            rows={4}
-            onChange={e => this.setState({ message: e.target.value })}
-          />
-          <Checkbox
-            onChange={e => {
-              this.setState({ senderAgreesWithPublish: e.target.checked });
-              console.log(this.state);
-            }}
-          >
-            Agree to publish
-          </Checkbox>
-          <Checkbox
-            onChange={e =>
-              this.setState({ senderAnonymous: !e.target.checked })
-            }
-          >
-            Agree to display my name
-          </Checkbox>
-        </Modal>
-      </div>
-    );
-  }
+          <Button onClick={handleOk} color="primary">
+            Give Kudos
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
 }

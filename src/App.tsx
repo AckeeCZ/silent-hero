@@ -4,27 +4,31 @@ import { MainLayout } from "./components/Layout";
 
 import { useReducer } from "react";
 import { reducer, initialState } from "./state";
-import { Login } from "./components/Login";
+import { LoginButton } from "./components/LoginButton";
 import { WordCloud } from "./components/WordCloud";
 import { NewKudo } from "./components/NewKudo";
-import { Layout } from "antd";
 import { KudosList } from "./components/KudosList";
-
-const { Footer } = Layout;
+import { UserWidget } from "./components/UserWidget";
 
 const App: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const contents = state.user ? (
+    <div>
+      <WordCloud
+        users={state.users || []}
+      />
+      <NewKudo dispatch={dispatch} user={state.user} users={state.users || []} />
+      <KudosList kudos={state.user?.kudos || []} user={state.user} users={state.users || []} />
+    </div>
+  ) : (<LoginButton dispatch={dispatch} user={state.user} />);
   return (
     <MainLayout>
-      <Login dispatch={dispatch} state={state} />
-        <WordCloud
-          users={state.users || []}
-        />
-        <NewKudo dispatch={dispatch} user={state.user} users={state.users || []} />
-        <KudosList  kudos={state.user?.kudos || []} user={state.user} users={state.users || []} />
-        <Footer style={{ textAlign: "center" }}>
-          Ackee ©2020 Created by silent-hero team
-        </Footer>
+      <div className="header"><h1>Silent hero.</h1></div>
+      <UserWidget user={state.user} dispatch={dispatch} />
+      {contents}
+      <div>
+        Ackee ©2020 Created by silent-hero team
+      </div>
     </MainLayout>
   );
 };
