@@ -53,6 +53,18 @@ export const login = async (): Promise<User> => {
   return composeP(addUserStats, addAllKudos)(user);
 }
 
+export const fetchAllData = (() => {
+  let called = false
+  return async (dispatch: Dispatcher['dispatch']) => {
+    if (called) return;
+    called = true;
+    dispatch({
+      users: await getUsers(),
+      type: "setUsers"
+    })
+  }
+})()
+
 export const getUsers = async () => Promise.all(
   (await userCollection.get()).docs.map(composeP(addRecentPublicKudos, snapshotToUser))
 )
