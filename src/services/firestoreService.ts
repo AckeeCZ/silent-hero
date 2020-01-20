@@ -1,8 +1,8 @@
 import firebase, { googleProvider } from "./firebaseService";
-import { Kudo, User } from "../state";
-import { snapshotToKudo, addUserStats, snapshotToUser } from "./transformService";
+import { Kudo, User, Dispatcher } from "../state";
+import { addUserStats, snapshotToUser, addAllKudos, addRecentPublicKudos } from "./transformService";
 import { generateId } from "./utilityServoce";
-
+import { composeP } from "ramda";
 
 export interface UserSnapshot {
   email?: string;
@@ -50,15 +50,11 @@ export const login = async (): Promise<User> => {
 
   await userCollection.doc(uid).set(user);
 
-  user.kudos = [
-    ...(await kudoCollection.where("receiverUid", "==", user.uid).get()).docs,
-    ...(await kudoCollection.where("senderUid", "==", user.uid).get()).docs
-  ].map(snapshotToKudo);
-  return addUserStats(user);
+  return composeP(addUserStats, addAllKudos)(user);
 }
 
 export const getUsers = async () => Promise.all(
-  (await userCollection.get()).docs.map(snapshotToUser)
+  (await userCollection.get()).docs.map(composeP(addRecentPublicKudos, snapshotToUser))
 )
 
 export const addKudo = async (

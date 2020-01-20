@@ -18,6 +18,19 @@ export const addUserStats = async (user: User): Promise<User> => ({
     .get()).size,
 })
 
+export const addAllKudos = async (user: User): Promise<User> => ({
+  ...user,
+  kudos: [
+    ...(await kudoCollection.where("receiverUid", "==", user.uid).get()).docs,
+    ...(await kudoCollection.where("senderUid", "==", user.uid).get()).docs
+  ].map(snapshotToKudo)
+})
+
+export const addRecentPublicKudos = async (user: User): Promise<User> => ({
+  ...user,
+  kudos: (await kudoCollection.where("receiverUid", "==", user.uid).where("createdAt", ">=", periodStart(-1)).get()).docs.map(snapshotToKudo)
+})
+
 export const snapshotToUser = async (d: firebase.firestore.QueryDocumentSnapshot<UserSnapshot>): Promise<User> => {
   const u = d.data();
   return addUserStats({
