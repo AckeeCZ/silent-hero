@@ -9,9 +9,11 @@ import { WordCloud } from "./components/WordCloud";
 import { NewKudo } from "./components/NewKudo";
 import { KudosList } from "./components/KudosList";
 import { UserWidget } from "./components/UserWidget";
+import { fetchAllData as fetchAllDataOnce } from "./services/firestoreService";
 
 const App: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  fetchAllDataOnce(dispatch)
   const contents = state.user ? (
     <div>
       <WordCloud
