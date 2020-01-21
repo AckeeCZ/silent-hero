@@ -39,7 +39,7 @@ export const NewKudo = ({ user, dispatch, users }: Props) => {
   return (
     <div>
       {user && (
-        <Button variant="contained" color="primary" onClick={() => setOpened(true)} startIcon={<SendOutlined />}>
+        <Button size="large" variant="contained" color="primary" onClick={() => setOpened(true)} startIcon={<SendOutlined />}>
           Send Kudos ({user.kudosSentThisPeriod}/{maxKudosPerPeriod})
         </Button>
       )}
