@@ -1,8 +1,8 @@
 import React from "react";
-import { Kudo, User } from "../state";
 import { formatRelative } from "date-fns";
 import { Card, CardHeader, Avatar, IconButton, CardContent, CardActions, Typography } from "@material-ui/core";
 import { HelpOutlineOutlined, ShareOutlined } from "@material-ui/icons";
+import { Kudo, User } from "../state/State";
 
 interface Props {
   kudos: Kudo;

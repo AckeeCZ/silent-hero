@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import { Dispatcher, User } from "../state";
 import { FormControlLabel, Checkbox, FormControl, InputLabel, Select, MenuItem, TextField, Button, DialogContent, DialogTitle, Dialog, DialogActions } from "@material-ui/core";
 import { SendOutlined } from "@material-ui/icons";
 import { maxKudosPerPeriod } from "../config/config";
-import { addKudo } from "../services/firestoreService";
+import { State } from "../state/State";
 
-interface Props extends Dispatcher {
-  user?: User;
-  users: User[];
-}
-
-export const NewKudo = ({ user, dispatch, users }: Props) => {
+export const NewKudo = () => {
   const [opened, setOpened] = useState(false);
+  let { loggedUser: user, users, createKudos } = State.useContainer()
   const close = () => setOpened(false);
   const [message, setMessage] = useState('');
   const [receiverUid, setReceiverUid] = useState('');
@@ -19,19 +14,13 @@ export const NewKudo = ({ user, dispatch, users }: Props) => {
   const [senderAnonymous, setSenderAnonymous] = useState(true);
 
   const handleOk = async () => {
-    if (!user) throw new Error('Must have user to create kudos');
     const kudoData = {
       message: message,
       receiverUid: receiverUid,
       senderAgreesWithPublish: senderAgreesWithPublish,
       senderAnonymous: senderAnonymous
     };
-    const kudo = await addKudo(
-      // TODO
-      kudoData as any,
-      user,
-    );
-    dispatch({ type: "createdKudo", kudo });
+    createKudos(kudoData);
     close();
   };
 

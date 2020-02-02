@@ -1,6 +1,6 @@
 import { kudoCollection, UserSnapshot, KudoSnapshot } from "./firestoreService";
 import { periodStart } from "./utilityServoce";
-import { User, Kudo } from "../state";
+import { User, Kudo } from "../state/State";
 
 export const addUserStats = async (user: User): Promise<User> => ({
   ...user,

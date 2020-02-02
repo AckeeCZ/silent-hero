@@ -1,18 +1,14 @@
 import React, { useState } from "react";
-import { Kudo, User } from "../state";
 import { Kudos } from "./Kudos";
 import { isEmpty } from "ramda";
-import { Tabs, Tab, Paper } from "@material-ui/core";
+import { Tabs, Tab } from "@material-ui/core";
+import { State, Kudo } from "../state/State";
 
-interface Props {
-  users: User[];
-  kudos: Kudo[];
-  user?: User;
-}
-
-export const KudosList = ({ user, kudos, users }: Props) => {
+export const KudosList = () => {
+  let { loggedUser: user, users } = State.useContainer()
   const [activeTab, setActiveTab] = useState<'sent' | 'received'>('sent');
-  if (!user || isEmpty(kudos)) return null;
+  if (!user || isEmpty(user.kudos)) return null;
+  const myUid = user.uid;
   const toCard = (view: 'sender' | 'receiver') => (k: Kudo) => {
     const from =
       (!k.senderAnonymous && users.find(u => u.uid === k.senderUid)) ||
@@ -21,9 +17,9 @@ export const KudosList = ({ user, kudos, users }: Props) => {
     if (!to) return null;
     return <Kudos view={view} kudos={k} to={to} from={from} />;
   };
-  const sent = user.kudos.filter(k => k.senderUid === user.uid).map(toCard('sender'));
+  const sent = user.kudos.filter(k => k.senderUid === myUid).map(toCard('sender'));
   const received = user.kudos
-    .filter(k => k.receiverUid === user.uid)
+    .filter(k => k.receiverUid === myUid)
     .map(toCard('receiver'));
   return (
     <div>

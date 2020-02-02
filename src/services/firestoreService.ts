@@ -1,5 +1,5 @@
 import firebase, { googleProvider } from "./firebaseService";
-import { Kudo, User, Dispatcher } from "../state";
+import { Kudo, User } from "../state/State";
 import { addUserStats, snapshotToUser, addAllKudos, addRecentPublicKudos } from "./transformService";
 import { generateId } from "./utilityServoce";
 import { composeP } from "ramda";
@@ -31,7 +31,7 @@ export const userCollection = firebase
   .collection("users") as firebase.firestore.CollectionReference<UserSnapshot>;
 
 
-export const login = async (): Promise<User> => {
+export const loginUser = async (): Promise<User> => {
   const { user: fbUser } = await firebase
     .auth()
     .signInWithPopup(googleProvider);
@@ -52,18 +52,6 @@ export const login = async (): Promise<User> => {
 
   return composeP(addUserStats, addAllKudos)(user);
 }
-
-export const fetchAllData = (() => {
-  let called = false
-  return async (dispatch: Dispatcher['dispatch']) => {
-    if (called) return;
-    called = true;
-    dispatch({
-      users: await getUsers(),
-      type: "setUsers"
-    })
-  }
-})()
 
 export const getUsers = async () => Promise.all(
   (await userCollection.get()).docs.map(composeP(addRecentPublicKudos, snapshotToUser))

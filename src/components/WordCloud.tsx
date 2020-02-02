@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-import { User, Kudo } from "../state";
 import { Kudos } from "./Kudos";
+import { User, Kudo } from "../state/State";
 const C3Cloud = require('react-d3-cloud')
 
-interface CloudProps {
-  users: User[]
-}
 interface Word {
   text?: string;
   value: { user: User, size: number };
@@ -24,14 +21,14 @@ const getCloud = (() => {
   }
 })()
 
-export const WordCloud = ({ users }: CloudProps) => {
+export const WordCloud = ({ users }: { users: User[] }) => {
   const [user, setUser] = useState<User | undefined>(undefined);
-  const max = users.reduce((acc, u) => Math.max(u.kudosReceivedThisPeriod, acc), 0)
+  const max = users.reduce((acc, u) => Math.max(u.kudosReceivedThisPeriod, acc), 0) + 1
   const data: Word[] = users.map(u => ({
     text: u.displayName,
     value: {
       user: u,
-      size: u.kudosReceivedThisPeriod / max * 70,
+      size: (u.kudosReceivedThisPeriod || 1) / max * 70,
     }
   }))
 
@@ -47,7 +44,7 @@ export const WordCloud = ({ users }: CloudProps) => {
     <div>
       {getCloud({ data, onClick })}
       {user && <React.Fragment><h2>{user?.displayName}'s public kudos</h2>
-        {user?.kudos.filter(k => k.receiverUid === k.receiverUid).map(toCard)}</React.Fragment>}
+        {user?.kudos.filter(k => k.receiverUid === user.uid).map(toCard)}</React.Fragment>}
 
     </div>
   )
