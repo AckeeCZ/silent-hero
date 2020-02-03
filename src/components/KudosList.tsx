@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Kudos } from "./Kudos";
 import { isEmpty } from "ramda";
-import { Tabs, Tab } from "@material-ui/core";
+import { Tabs, Tab, Container } from "@material-ui/core";
 import { State, Kudo } from "../state/State";
 
 export const KudosList = () => {
   let { loggedUser: user, users } = State.useContainer()
-  const [activeTab, setActiveTab] = useState<'sent' | 'received'>('sent');
+  const [activeTab, setActiveTab] = useState<'sent' | 'received'>('received');
   if (!user || isEmpty(user.kudos)) return null;
   const myUid = user.uid;
   const toCard = (view: 'sender' | 'receiver') => (k: Kudo) => {
@@ -22,7 +22,7 @@ export const KudosList = () => {
     .filter(k => k.receiverUid === myUid)
     .map(toCard('receiver'));
   return (
-    <div>
+    <Container maxWidth="md">
       <Tabs
         value={activeTab}
         centered
@@ -35,6 +35,6 @@ export const KudosList = () => {
 
       {activeTab === 'received' && received}
       {activeTab === 'sent' && sent}
-    </div>
+    </Container>
   );
 }

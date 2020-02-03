@@ -33,7 +33,7 @@ export const Kudos = ({ kudos, to, from, view }: Props) => {
       </CardContent>
       {view === 'receiver' && <CardActions disableSpacing>
         <IconButton disabled={shareDisabled} onClick={() => editKudos(kudos.id, { receiverAgreesWithPublish: !kudos.receiverAgreesWithPublish})}>
-          <ShareOutlined color={shareActive ? 'primary' : undefined} />
+          <ShareOutlined color={shareActive ? 'secondary' : undefined} />
         </IconButton>
       </CardActions>}
     </Card>

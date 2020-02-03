@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Kudos } from "./Kudos";
 import { User, Kudo } from "../state/State";
+import { Container } from "@material-ui/core";
 const C3Cloud = require('react-d3-cloud')
 
 interface Word {
@@ -43,8 +44,8 @@ export const WordCloud = ({ users }: { users: User[] }) => {
   return (
     <div>
       {getCloud({ data, onClick })}
-      {user && <React.Fragment><h2>{user?.displayName}'s public kudos</h2>
-        {user?.kudos.filter(k => k.receiverUid === user.uid).map(toCard)}</React.Fragment>}
+      {user && <Container maxWidth="md"><h2>{user?.displayName}'s public kudos</h2>
+        {user?.kudos.filter(k => k.receiverUid === user.uid).map(toCard)}</Container>}
 
     </div>
   )

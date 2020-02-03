@@ -2,12 +2,12 @@ import React from "react";
 import "./App.css";
 import { MainLayout } from "./components/Layout";
 
-import { LoginButton } from "./components/LoginButton";
 import { WordCloud } from "./components/WordCloud";
 import { NewKudo } from "./components/NewKudo";
 import { KudosList } from "./components/KudosList";
-import { UserWidget } from "./components/UserWidget";
 import { State } from "./state/State";
+import { Typography, Divider, Container } from "@material-ui/core";
+import { Welcome } from "./components/Welcome";
 
 const App: React.FC = () => {
   let { loggedUser, users } = State.useContainer()
@@ -19,15 +19,16 @@ const App: React.FC = () => {
       <NewKudo />
       <KudosList />
     </div>
-  ) : (<LoginButton />);
+  ) : (<Welcome />);
   return (
     <MainLayout>
-      <div className="header"><h1>Silent hero.</h1></div>
-      <UserWidget />
       {contents}
-      <div>
-        Ackee ©2020 Created by silent-hero team
-      </div>
+      <Container maxWidth="md" className="footer">
+        <Typography variant="overline" display="block" gutterBottom>
+          <Divider light />
+          Ackee ©2020 Created by heroes for heroes
+      </Typography>
+      </Container>
     </MainLayout>
   );
 };

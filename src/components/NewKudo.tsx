@@ -33,7 +33,7 @@ export const NewKudo = () => {
         </Button>
       )}
       <Dialog open={opened} onClose={close}>
-        <DialogTitle id="form-dialog-title">Give Kudos</DialogTitle>
+        <DialogTitle id="form-dialog-title">Send Kudos</DialogTitle>
         <DialogContent className="kudo-from">
           <FormControl>
             <InputLabel>Your hero</InputLabel>
@@ -60,8 +60,8 @@ export const NewKudo = () => {
           <Button onClick={close} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleOk} color="primary">
-            Give Kudos
+          <Button onClick={handleOk} variant="contained" color="primary">
+            Send
           </Button>
         </DialogActions>
       </Dialog>

@@ -33,8 +33,12 @@ export const initialState: State = keys(emptyState).reduce((res, key) => {
 const wrap = <K extends keyof State>(key: K) => (<T = State[K]>() => ([val, setter]: [T, React.Dispatch<React.SetStateAction<T>>]) => [
     val,
     compose(setter, tap(x => {
-        console.debug(`[${key}] -> ${x}`)
-        window.localStorage.setItem(key, JSON.stringify(x))
+        console.debug(`[${key}] -> ${x}`, x)
+        if (x) {
+            window.localStorage.setItem(key, JSON.stringify(x))
+        } else {
+            window.localStorage.removeItem(key)
+        }
     }))
 ] as const)();
 

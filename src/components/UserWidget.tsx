@@ -1,17 +1,9 @@
 import React from "react";
-import { Avatar, IconButton } from "@material-ui/core";
-import { ExitToAppOutlined } from "@material-ui/icons";
+import { Button } from "@material-ui/core";
 import { State } from "../state/State";
 
 export const UserWidget = () => {
-  let { loggedUser: user, logout } = State.useContainer()
-  if (!user) return null;
-  return (
-    <div className="user-widget">
-      <IconButton onClick={logout}>
-        <ExitToAppOutlined fontSize="inherit" />
-      </IconButton>
-      <Avatar alt={user?.displayName} src={user?.avatar} />
-    </div>
-  );
+  let { loggedUser: user, logout, login } = State.useContainer()
+  const button = user ? <Button color="inherit" onClick={logout}>logout</Button> : <Button color="inherit" onClick={login}>login</Button>;
+  return button;
 }

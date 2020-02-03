@@ -16,6 +16,10 @@
   text-align: center;
 }
 
+.footer {
+  margin-top: 3em;
+}
+
 svg text:hover {
   cursor: pointer;
   opacity: 0.8;
@@ -30,6 +34,10 @@ svg text:hover {
   border-bottom: 0.1px black solid;
   padding: 30px 0;
   text-align: left;
+}
+
+.MuiCardContent-root:last-child {
+  padding-bottom: 16px !important;
 }
 
 h2 {
@@ -47,19 +55,8 @@ h2 {
   width: 400px;
 }
 
-.user-widget {
-  float: right;
-  top: -128px;
-  position: relative;
-}
-
 .user-widget button {
-  color: black;
-  margin-top: -25px;
-}
-
-.user-widget .MuiAvatar-root {
-  display: inline-block;
+  color: white;
 }
 
 .kudos-card {
