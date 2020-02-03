@@ -2,7 +2,7 @@ import React from "react";
 import { formatRelative } from "date-fns";
 import { Card, CardHeader, Avatar, IconButton, CardContent, CardActions, Typography } from "@material-ui/core";
 import { HelpOutlineOutlined, ShareOutlined } from "@material-ui/icons";
-import { Kudo, User } from "../state/State";
+import { Kudo, User, State } from "../state/State";
 
 interface Props {
   kudos: Kudo;
@@ -13,7 +13,10 @@ interface Props {
 
 export const Kudos = ({ kudos, to, from, view }: Props) => {
   if (!kudos) return null;
+  const { editKudos } = State.useContainer()
   const actor = view === 'receiver' ? from : to;
+  const shareDisabled = view === 'receiver' ? !kudos.senderAgreesWithPublish : !kudos.receiverAgreesWithPublish;
+  const shareActive = !shareDisabled && view === 'receiver' ? kudos.receiverAgreesWithPublish : kudos.senderAgreesWithPublish;
   return (
     <Card className="kudos-card">
       {view !== 'bare' && <CardHeader
@@ -28,9 +31,9 @@ export const Kudos = ({ kudos, to, from, view }: Props) => {
           {kudos.message}
         </Typography>
       </CardContent>
-      {view !== 'bare' && <CardActions disableSpacing>
-        <IconButton aria-label="share">
-          <ShareOutlined />
+      {view === 'receiver' && <CardActions disableSpacing>
+        <IconButton disabled={shareDisabled} onClick={() => editKudos(kudos.id, { receiverAgreesWithPublish: !kudos.receiverAgreesWithPublish})}>
+          <ShareOutlined color={shareActive ? 'primary' : undefined} />
         </IconButton>
       </CardActions>}
     </Card>

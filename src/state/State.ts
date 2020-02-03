@@ -1,17 +1,17 @@
 import { createContainer } from "unstated-next"
 import { useState } from "react"
-import { loginUser, getUsers, addKudo, UserSnapshot, KudoSnapshot } from '../services/firestoreService'
+import { loginUser, getUsers, addKudo, UserSnapshot, KudoSnapshot, updateKudos } from '../services/firestoreService'
 import { compose, keys, tap, uniq } from "ramda"
 
 export interface User extends UserSnapshot {
-  kudos: Kudo[];
-  kudosSentThisPeriod: number;
-  kudosReceivedThisPeriod: number;
-  kudosReceivedLastPeriod: number;
+    kudos: Kudo[];
+    kudosSentThisPeriod: number;
+    kudosReceivedThisPeriod: number;
+    kudosReceivedLastPeriod: number;
 };
 
 export interface Kudo extends Omit<KudoSnapshot, 'createdAt'> {
-  createdAt: Date | string;
+    createdAt: Date | string;
 };
 
 export interface State {
@@ -28,7 +28,7 @@ export const initialState: State = keys(emptyState).reduce((res, key) => {
     const cached = window.localStorage.getItem(key);
     if (cached) res[key] = JSON.parse(cached)
     return res;
-}, emptyState);
+}, {} as State);
 
 const wrap = <K extends keyof State>(key: K) => (<T = State[K]>() => ([val, setter]: [T, React.Dispatch<React.SetStateAction<T>>]) => [
     val,
@@ -59,5 +59,11 @@ export const State = createContainer((initState: State = initialState) => {
         )
         setLoggedUser({ ...loggedUser, kudosSentThisPeriod: loggedUser.kudosSentThisPeriod + 1, kudos: uniq([...loggedUser.kudos, kudo]) })
     }
-    return { users, loggedUser, login, logout, createKudos }
+    const editKudos = async (id: string, kudosData: any) => {
+        if (!loggedUser) throw new Error('Must have user to create kudos');
+        const kudo = await updateKudos(id, kudosData)
+        const kudos = [...loggedUser.kudos.filter(k => k.id !== id), kudo]
+        setLoggedUser({ ...loggedUser, kudos })
+    }
+    return { users, loggedUser, login, logout, createKudos, editKudos }
 })

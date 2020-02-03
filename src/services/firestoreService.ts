@@ -1,6 +1,6 @@
 import firebase, { googleProvider } from "./firebaseService";
 import { Kudo, User } from "../state/State";
-import { addUserStats, snapshotToUser, addAllKudos, addRecentPublicKudos } from "./transformService";
+import { addUserStats, snapshotToUser, addAllKudos, addRecentPublicKudos, snapshotToKudo } from "./transformService";
 import { generateId } from "./utilityServoce";
 import { composeP } from "ramda";
 
@@ -73,4 +73,13 @@ export const addKudo = async (
   };
   await kudoCollection.doc(kudo.id).set(kudo as any);
   return kudo;
+};
+
+export const updateKudos = async (
+  id: Kudo['id'],
+  kudosData: Pick<Kudo, "senderAgreesWithPublish" | "receiverAgreesWithPublish">
+) => {
+  const doc = kudoCollection.doc(id);
+  await doc.update(kudosData);
+  return snapshotToKudo(await doc.get())
 };

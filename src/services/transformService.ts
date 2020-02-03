@@ -42,7 +42,7 @@ export const snapshotToUser = async (d: firebase.firestore.QueryDocumentSnapshot
   });
 }
 
-export const snapshotToKudo = (d: firebase.firestore.QueryDocumentSnapshot<KudoSnapshot>): Kudo => {
-  const k = d.data();
+export const snapshotToKudo = (d: firebase.firestore.QueryDocumentSnapshot<KudoSnapshot> | firebase.firestore.DocumentSnapshot<KudoSnapshot>): Kudo => {
+  const k = d.data()!;
   return { ...k, createdAt: k.createdAt.toDate() }
 };
