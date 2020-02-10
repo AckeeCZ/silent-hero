@@ -47,7 +47,12 @@ const replaceKudos = (kudos: Kudo[], fish: Kudo) => [...kudos.filter(k => k.id !
 
 export const State = createContainer((initState: State = initialState) => {
     const [users, setUsers] = wrap('users')(useState(initState.users))
+    const [refreshed, setRefreshed] = useState(false)
     const [loggedUser, setLoggedUser] = wrap('loggedUser')(useState(initState.loggedUser))
+    if (!refreshed) {
+        setRefreshed(true);
+        getUsers().then(setUsers)
+    }
     const login = async () => {
         setLoggedUser(await loginUser());
         setUsers(await getUsers());
