@@ -45,7 +45,7 @@ export const WordCloud = ({ users }: { users: User[] }) => {
     <div>
       {getCloud({ data, onClick })}
       {user && <Container maxWidth="md"><h2>{user?.displayName}'s public kudos</h2>
-        {user?.kudos.filter(k => k.receiverUid === user.uid).map(toCard)}</Container>}
+        {user?.kudos.filter(k => k.receiverUid === user.uid).filter(k => k.senderAgreesWithPublish && k.receiverAgreesWithPublish).map(toCard)}</Container>}
 
     </div>
   )
