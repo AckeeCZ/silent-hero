@@ -17,8 +17,9 @@ export const KudosList = () => {
     if (!to) return null;
     return <Kudos view={view} kudos={k} to={to} from={from} />;
   };
-  const sent = user.kudos.filter(k => k.senderUid === myUid).map(toCard('sender'));
-  const received = user.kudos
+  const kudos = user.kudos.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))
+  const sent = kudos.filter(k => k.senderUid === myUid).map(toCard('sender'));
+  const received = kudos
     .filter(k => k.receiverUid === myUid)
     .map(toCard('receiver'));
   return (

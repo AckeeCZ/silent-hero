@@ -1,7 +1,7 @@
 import { createContainer } from "unstated-next"
 import { useState } from "react"
 import { loginUser, getUsers, addKudo, UserSnapshot, KudoSnapshot, updateKudos } from '../services/firestoreService'
-import { compose, keys, tap, uniq } from "ramda"
+import { compose, keys, tap, uniq, sortBy, prop } from "ramda"
 
 export interface User extends UserSnapshot {
     kudos: Kudo[];
@@ -26,6 +26,7 @@ const emptyState: State = {
 
 export const initialState: State = keys(emptyState).reduce((res, key) => {
     const cached = window.localStorage.getItem(key);
+    console.log({ key, cached })
     if (cached) res[key] = JSON.parse(cached)
     return res;
 }, {} as State);
@@ -42,6 +43,8 @@ const wrap = <K extends keyof State>(key: K) => (<T = State[K]>() => ([val, sett
     }))
 ] as const)();
 
+const replaceKudos = (kudos: Kudo[], fish: Kudo) => [...kudos.filter(k => k.id !== fish.id), fish]
+
 export const State = createContainer((initState: State = initialState) => {
     const [users, setUsers] = wrap('users')(useState(initState.users))
     const [loggedUser, setLoggedUser] = wrap('loggedUser')(useState(initState.loggedUser))
@@ -52,6 +55,7 @@ export const State = createContainer((initState: State = initialState) => {
     const logout = async () => {
         setLoggedUser(emptyState.loggedUser);
         setUsers(emptyState.users);
+        console.log({ emptyState, loggedUser, users })
     }
     // TODO
     const createKudos = async (kudoData: any) => {
@@ -61,12 +65,13 @@ export const State = createContainer((initState: State = initialState) => {
             kudoData,
             loggedUser,
         )
-        setLoggedUser({ ...loggedUser, kudosSentThisPeriod: loggedUser.kudosSentThisPeriod + 1, kudos: uniq([...loggedUser.kudos, kudo]) })
+        const kudos = replaceKudos(loggedUser.kudos, kudo);
+        setLoggedUser({ ...loggedUser, kudosSentThisPeriod: loggedUser.kudosSentThisPeriod + 1, kudos })
     }
     const editKudos = async (id: string, kudosData: any) => {
         if (!loggedUser) throw new Error('Must have user to create kudos');
         const kudo = await updateKudos(id, kudosData)
-        const kudos = [...loggedUser.kudos.filter(k => k.id !== id), kudo]
+        const kudos = replaceKudos(loggedUser.kudos, kudo);
         setLoggedUser({ ...loggedUser, kudos })
     }
     return { users, loggedUser, login, logout, createKudos, editKudos }
