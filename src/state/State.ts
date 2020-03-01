@@ -26,7 +26,7 @@ const emptyState: State = {
 
 export const initialState: State = keys(emptyState).reduce((res, key) => {
     const cached = window.localStorage.getItem(key);
-    console.log({ key, cached })
+    console.debug({ key, cached })
     if (cached) res[key] = JSON.parse(cached)
     return res;
 }, {} as State);
@@ -49,7 +49,7 @@ export const State = createContainer((initState: State = initialState) => {
     const [users, setUsers] = wrap('users')(useState(initState.users))
     const [refreshed, setRefreshed] = useState(false)
     const [loggedUser, setLoggedUser] = wrap('loggedUser')(useState(initState.loggedUser))
-    if (!refreshed) {
+    if (!refreshed && loggedUser) {
         setRefreshed(true);
         getUsers().then(setUsers)
     }

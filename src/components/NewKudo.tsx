@@ -17,7 +17,7 @@ export const NewKudo = () => {
   if (!user) return null;
   return (
     <div>
-      <Button size="large" variant="contained" color="primary" onClick={() => setOpened(true)} startIcon={<SendOutlined />}>
+      <Button size="large" disabled={user.kudosSentThisPeriod >= maxKudosPerPeriod} variant="contained" color="primary" onClick={() => setOpened(true)} startIcon={<SendOutlined />}>
         Send Kudos ({user.kudosSentThisPeriod}/{maxKudosPerPeriod})
         </Button>
       <Dialog open={opened} onClose={close}>
@@ -47,7 +47,7 @@ export const NewKudo = () => {
               <Field
                 required
                 name="receiverUid"
-                label="ReceiverUid"
+                label="Your hero"
                 options={users.map(u => ({ value: u.uid, label: `${u.displayName} (${u.email})` }))}
                 component={Select}
               />
@@ -60,13 +60,13 @@ export const NewKudo = () => {
               <Field
                 required
                 name="senderAgreesWithPublish"
-                label="SenderAgreesWithPublish"
+                label="I agree to publish (sender & receiver must both agree to display publicly)"
                 component={Switch}
               />
               <Field
                 required
                 name="senderAnonymous"
-                label="senderAnonymous"
+                label="I want to remain anonymous"
                 component={Switch}
               />
             </DialogContent>

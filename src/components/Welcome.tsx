@@ -1,5 +1,6 @@
 import React from "react";
 import { Typography, Container } from "@material-ui/core";
+import { period, maxKudosPerPeriod } from "../config/config";
 
 export const Welcome = () => {
   return (<>
@@ -12,10 +13,10 @@ export const Welcome = () => {
       <Typography variant="h4" align="justify" gutterBottom>How does it work?</Typography>
       <Typography variant="body1" align="justify" gutterBottom>
         <ol>
-          <li>Every [X], you have [Y] kudos cards to send</li>
+          <li>Every {period}, you have {maxKudosPerPeriod} kudos cards to send</li>
           <li>To send kudos to your hero, just select them from registered users and write a mesage</li>
           <li>You can browse the kudos you received or sent</li>
-          <li>Anyone can see some of the rewarded heroes for the past [X]</li>
+          <li>Anyone can see some of the rewarded heroes for the past {period}</li>
           <li>Some kudos might shown to public, if both hero and sender agree</li>
         </ol>
       </Typography>

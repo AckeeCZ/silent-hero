@@ -15,9 +15,11 @@ const rotate = () => ~~(Math.random() * 2) * 90;
 // Prevent randomizing render via memoization
 const getCloud = (() => {
   let cloud: any = undefined;
+  let lastLength = 0;
   return (props: { data: any, onClick: any }) => {
-    if (cloud) return cloud;
+    if (cloud && lastLength === props.data.length) return cloud;
     cloud = <C3Cloud data={props.data} font="Bebas Neue" fontSizeMapper={fontSizeMapper} rotate={rotate} padding={1} onWordClick={props.onClick} />
+    lastLength = props.data.length;
     return cloud;
   }
 })()
